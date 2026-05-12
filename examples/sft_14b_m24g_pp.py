@@ -6,10 +6,14 @@ os.environ['TOKENIZERS_PARALLELISM'] = 'true'
 
 if 'RANK' in os.environ:
     print("\nError: This script must be run with python, not torchrun")
-    print(f"Example usage: CUDA_VISIBLE_DEVICES=3,4,5 python {__file__}")
+    print(f"Example usage: CUDA_VISIBLE_DEVICES=0,1,2,3 python {__file__}")
     sys.exit(1)
 
-model_path = "/data/Qwen/Qwen2.5-14B-Instruct"
+# ---- Changed: Qwen3.6-27B (model_type=qwen3_5) ----
+# AutoModelForCausalLM will resolve to Qwen3_5ForCausalLM (not ForConditionalGeneration),
+# which has the same .model.layers/.model.embed_tokens/.model.norm structure as Qwen2.
+# This avoids the extra nesting from the multimodal wrapper.
+model_path = "/mnt/data/kw/models/Huihui-Qwen3.6-27B-abliterated"
 
 model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16)
 model.train()
